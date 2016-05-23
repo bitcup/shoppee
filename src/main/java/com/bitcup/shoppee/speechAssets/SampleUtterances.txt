@@ -1,0 +1,20 @@
+AddItemToStoreIntent add {ItemName} to {StoreName}
+AddItemToStoreIntent add {ItemName} to {StoreName} list
+AddItemToStoreIntent add {ItemName} to {StoreName} shopping list
+
+RemoveItemFromStoreIntent remove {ItemName} from {StoreName}
+RemoveItemFromStoreIntent remove {ItemName} from {StoreName} list
+RemoveItemFromStoreIntent remove {ItemName} from {StoreName} shopping list
+
+ReadItemFromStoreIntent read {StoreName}
+ReadItemFromStoreIntent read {StoreName} list
+ReadItemFromStoreIntent read {StoreName} shopping list
+
+ClearItemsForStoreIntent clear {StoreName}
+ClearItemsForStoreIntent clear {StoreName} list
+ClearItemsForStoreIntent clear {StoreName} shopping list
+
+ClearItemsForAllStoresIntent clear all lists
+ClearItemsForAllStoresIntent clear all shopping lists
+
+StoreItemsToUserViaSMSIntent text {StoreName} list to {UserName}

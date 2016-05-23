@@ -1,0 +1,5 @@
+/src/test/resources/testCredz.properties
+/src/main/resources/credz.properties
+target/
+.idea/
+*.iml

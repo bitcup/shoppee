@@ -1,0 +1,79 @@
+{
+  "intents": [
+    {
+      "intent": "AddItemToStoreIntent",
+      "slots": [
+        {
+          "name": "StoreName",
+          "type": "LIST_OF_STORES"
+        },
+        {
+          "name": "ItemName",
+          "type": "LIST_OF_ITEMS"
+        }
+      ]
+    },
+    {
+      "intent": "RemoveItemFromStoreIntent",
+      "slots": [
+        {
+          "name": "StoreName",
+          "type": "LIST_OF_STORES"
+        },
+        {
+          "name": "ItemName",
+          "type": "LIST_OF_ITEMS"
+        }
+      ]
+    },
+    {
+      "intent": "ReadItemFromStoreIntent",
+      "slots": [
+        {
+          "name": "StoreName",
+          "type": "LIST_OF_STORES"
+        }
+      ]
+    },
+    {
+      "intent": "ClearItemsForStoreIntent",
+      "slots": [
+        {
+          "name": "StoreName",
+          "type": "LIST_OF_STORES"
+        }
+      ]
+    },
+    {
+      "intent": "ClearItemsForAllStoresIntent",
+      "slots": [
+        {
+          "name": "StoreName",
+          "type": "LIST_OF_STORES"
+        }
+      ]
+    },
+    {
+      "intent": "StoreItemsToUserViaSMSIntent",
+      "slots": [
+        {
+          "name": "StoreName",
+          "type": "LIST_OF_STORES"
+        },
+        {
+          "name": "UserName",
+          "type": "LIST_OF_USERS"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
