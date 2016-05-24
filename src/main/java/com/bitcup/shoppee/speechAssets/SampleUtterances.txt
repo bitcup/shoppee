@@ -17,4 +17,11 @@ ClearItemsForStoreIntent clear {StoreName} shopping list
 ClearItemsForAllStoresIntent clear all lists
 ClearItemsForAllStoresIntent clear all shopping lists
 
+ResetListsIntent reset lists
+ResetListsIntent reset shopping lists
+ResetListsIntent reset all lists
+ResetListsIntent reset all shopping lists
+ResetListsIntent reset stores
+ResetListsIntent reset all stores
+
 StoreItemsToUserViaSMSIntent text {StoreName} list to {UserName}

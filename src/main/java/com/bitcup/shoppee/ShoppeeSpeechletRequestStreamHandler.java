@@ -1,11 +1,9 @@
 package com.bitcup.shoppee;
 
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
+import com.bitcup.shoppee.utils.Props;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -13,27 +11,20 @@ import java.util.Set;
  */
 public class ShoppeeSpeechletRequestStreamHandler extends SpeechletRequestStreamHandler {
 
-    private static final Set<String> supportedApplicationIds;
+    private static final Set<String> SUPPORTED_APPLICATION_IDS;
 
     static {
         /*
          * This Id can be found on https://developer.amazon.com/edw/home.html#/ "Edit" the relevant
          * Alexa Skill and put the relevant Application Ids in this Set.
          */
-        supportedApplicationIds = new HashSet<>();
-        try {
-            Properties prop = new Properties();
-            InputStream in = ShoppeeSpeechletRequestStreamHandler.class.getResourceAsStream("/credz.properties");
-            prop.load(in);
-            String supportedAppId = prop.getProperty("supportedAppId");
-            in.close();
-            supportedApplicationIds.add(supportedAppId);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+        SUPPORTED_APPLICATION_IDS = new HashSet<>();
+        Props props = new Props("credz.properties");
+        String supportedAppId = props.getString("supportedAppId");
+        SUPPORTED_APPLICATION_IDS.add(supportedAppId);
     }
 
     public ShoppeeSpeechletRequestStreamHandler() {
-        super(new ShoppeeSpeechlet(), supportedApplicationIds);
+        super(new ShoppeeSpeechlet(), SUPPORTED_APPLICATION_IDS);
     }
 }

@@ -42,13 +42,13 @@ public class ShoppeeSpeechlet implements Speechlet {
             speechText = "You don't have items in your list.  Let's add some. What item do you want to add to which store?";
             repromptText = "Please tell me what item you want to add to which store?";
         } else {
-            speechText = "";
+            speechText = "You have ";
             for (String store : list.getStores()) {
-                speechText += "You have " + list.getNumberOfItems(store) + "items in " + store + " list.";
+                speechText += list.getNumberOfItems(store) + " items in " + store + " list <break time=\"0.2s\" />, ";
             }
             repromptText = "Here are things you can say.  Read me the Costco list. Add milk to Costco list. Remove milk from Costco list.";
         }
-        return getAskSpeechletResponse(speechText, repromptText);
+        return getAskSpeechletResponse(speechText,  "<speak>" + repromptText + "</speak>");
     }
 
     @Override
@@ -65,6 +65,8 @@ public class ShoppeeSpeechlet implements Speechlet {
             return getClearItemsForStoreIntentResponse(intent, session);
         } else if ("ClearItemsForAllStoresIntent".equals(intent.getName())) {
             return getClearItemsForAllStoresIntentResponse(session);
+        } else if ("ResetListsIntent".equals(intent.getName())) {
+            return getResetListsIntentResponse(session);
         } else {
             throw new IllegalArgumentException("Unrecognized intent: " + intent.getName());
         }
@@ -200,6 +202,18 @@ public class ShoppeeSpeechlet implements Speechlet {
         list.clearItemsForAllStores();
         shoppeeDao.saveShoppeeList(list);
         String speechText = "All lists cleared.";
+        return getTellSpeechletResponse(speechText);
+    }
+
+    public SpeechletResponse getResetListsIntentResponse(Session session) {
+        ShoppeeList list = shoppeeDao.getShoppeeList(session);
+        if (list == null || list.isEmpty()) {
+            String speechText = "You don't have any lists.";
+            return getTellSpeechletResponse(speechText);
+        }
+        list.clearAll();
+        shoppeeDao.saveShoppeeList(list);
+        String speechText = "Reset all lists.";
         return getTellSpeechletResponse(speechText);
     }
 

@@ -5,13 +5,12 @@ import com.amazon.speech.speechlet.User;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.bitcup.shoppee.utils.Props;
 import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.InputStream;
-import java.util.Properties;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -30,12 +29,9 @@ public class ShoppeeDaoTest {
 
     @Before
     public void setup() throws Exception {
-        Properties prop = new Properties();
-        InputStream in = getClass().getResourceAsStream("/testCredz.properties");
-        prop.load(in);
-        String accessKey = prop.getProperty("accessKey");
-        String secretKey = prop.getProperty("secretKey");
-        in.close();
+        Props props = new Props("testCredz.properties");
+        String accessKey = props.getString("accessKey");
+        String secretKey = props.getString("secretKey");
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(credentials);
         ShoppeeDynamoDbClient client = new ShoppeeDynamoDbClient(dynamoDBClient);

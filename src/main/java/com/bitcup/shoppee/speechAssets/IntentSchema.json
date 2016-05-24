@@ -45,13 +45,10 @@
       ]
     },
     {
-      "intent": "ClearItemsForAllStoresIntent",
-      "slots": [
-        {
-          "name": "StoreName",
-          "type": "LIST_OF_STORES"
-        }
-      ]
+      "intent": "ClearItemsForAllStoresIntent"
+    },
+    {
+      "intent": "ResetListsIntent"
     },
     {
       "intent": "StoreItemsToUserViaSMSIntent",
