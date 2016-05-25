@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author bitcup
@@ -34,9 +35,13 @@ public class ShoppeeList {
         return listData.getItemsByStore().keySet();
     }
 
+    public boolean storeContains(String item, String store) {
+        return listData.storeContains(item, store);
+    }
+
     public List<String> getItemsForStore(String store) {
         if (listData.getItemsByStore().containsKey(store)) {
-            return listData.getItemsByStore().get(store);
+            return listData.getItemsByStore().get(store).stream().map(ShoppeeListItem::getName).collect(Collectors.toList());
         }
         return Lists.newArrayList();
     }

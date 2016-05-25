@@ -33,22 +33,8 @@ public class ShoppeeSpeechlet implements Speechlet {
 
     @Override
     public SpeechletResponse onLaunch(LaunchRequest launchRequest, Session session) throws SpeechletException {
-        String speechText, repromptText;
-
-        // get list summary by store
-        ShoppeeList list = shoppeeDao.getShoppeeList(session);
-
-        if (list == null || list.isEmpty()) {
-            speechText = "You don't have items in your list.  Let's add some. What item do you want to add to which store?";
-            repromptText = "Please tell me what item you want to add to which store?";
-        } else {
-            speechText = "You have ";
-            for (String store : list.getStores()) {
-                speechText += list.getNumberOfItems(store) + " items in " + store + " list <break time=\"0.2s\" />, ";
-            }
-            repromptText = "Here are things you can say.  Read me the Costco list. Add milk to Costco list. Remove milk from Costco list.";
-        }
-        return getAskSpeechletResponse(speechText,  "<speak>" + repromptText + "</speak>");
+        String speechText = "You can add an item to a store, remove item from store, or say help. What would you like?";
+        return getAskSpeechletResponse(speechText, speechText);
     }
 
     @Override
@@ -59,14 +45,14 @@ public class ShoppeeSpeechlet implements Speechlet {
             return getAddItemToStoreIntentResponse(intent, session);
         } else if ("RemoveItemFromStoreIntent".equals(intent.getName())) {
             return getRemoveItemFromStoreIntentResponse(intent, session);
-        } else if ("ReadItemFromStoreIntent".equals(intent.getName())) {
-            return getReadItemFromStoreIntentResponse(intent, session);
-        } else if ("ClearItemsForStoreIntent".equals(intent.getName())) {
-            return getClearItemsForStoreIntentResponse(intent, session);
-        } else if ("ClearItemsForAllStoresIntent".equals(intent.getName())) {
-            return getClearItemsForAllStoresIntentResponse(session);
-        } else if ("ResetListsIntent".equals(intent.getName())) {
-            return getResetListsIntentResponse(session);
+        } else if ("ReadItemsFromStoreIntent".equals(intent.getName())) {
+            return getReadItemsFromStoreIntentResponse(intent, session);
+        } else if ("AMAZON.HelpIntent".equals(intent.getName())) {
+            return getHelpIntentResponse();
+        } else if ("AMAZON.CancelIntent".equals(intent.getName())) {
+            return getExitIntentResponse();
+        } else if ("AMAZON.StopIntent".equals(intent.getName())) {
+            return getExitIntentResponse();
         } else {
             throw new IllegalArgumentException("Unrecognized intent: " + intent.getName());
         }
@@ -96,7 +82,7 @@ public class ShoppeeSpeechlet implements Speechlet {
         }
     }
 
-    public SpeechletResponse getAddItemToStoreIntentResponse(Intent intent, Session session) {
+    private SpeechletResponse getAddItemToStoreIntentResponse(Intent intent, Session session) {
         String storeName = intent.getSlot("StoreName").getValue();
         if (storeName == null) {
             String speechText = "Sorry, I did not hear the store name. Please say again?";
@@ -112,19 +98,23 @@ public class ShoppeeSpeechlet implements Speechlet {
         if (list == null) {
             list = new ShoppeeList(session, new ShoppeeListData());
         }
+        // todo: what if item exists, but is already marked as purchased?
+        // todo: prompt for "add another item?"
+        if (list.storeContains(itemName, storeName)) {
+            String speechText = itemName + " is already in " + storeName + " list.";
+            return getAskSpeechletResponse(speechText, speechText);
+        }
         list.addItemToStore(itemName, storeName);
         shoppeeDao.saveShoppeeList(list);
-
-        String speechText = "Item " + itemName + " added to " + storeName + " list";
-
-        return getTellSpeechletResponse(speechText);
+        String speechText = itemName + " added to " + storeName + " list";
+        return getAskSpeechletResponse(speechText, speechText);
     }
 
-    public SpeechletResponse getRemoveItemFromStoreIntentResponse(Intent intent, Session session) {
+    private SpeechletResponse getRemoveItemFromStoreIntentResponse(Intent intent, Session session) {
         ShoppeeList list = shoppeeDao.getShoppeeList(session);
         if (list == null || list.isEmpty()) {
             String speechText = "You don't have any lists.";
-            return getTellSpeechletResponse(speechText);
+            return getAskSpeechletResponse(speechText, speechText);
         }
         String storeName = intent.getSlot("StoreName").getValue();
         if (storeName == null) {
@@ -133,7 +123,7 @@ public class ShoppeeSpeechlet implements Speechlet {
         }
         if (list.getNumberOfItems(storeName) == 0) {
             String speechText = "You don't have items in " + storeName + " list.";
-            return getTellSpeechletResponse(speechText);
+            return getAskSpeechletResponse(speechText, speechText);
         }
         String itemName = intent.getSlot("ItemName").getValue();
         if (itemName == null) {
@@ -143,84 +133,52 @@ public class ShoppeeSpeechlet implements Speechlet {
         list.removeItemFromStore(itemName, storeName);
         shoppeeDao.saveShoppeeList(list);
 
-        String speechText = "Item " + itemName + " removed from " + storeName + " list.";
-        return getTellSpeechletResponse(speechText);
+        String speechText = itemName + " removed from " + storeName + " list.";
+        return getAskSpeechletResponse(speechText, speechText);
     }
 
-    public SpeechletResponse getReadItemFromStoreIntentResponse(Intent intent, Session session) {
+    private SpeechletResponse getReadItemsFromStoreIntentResponse(Intent intent, Session session) {
         ShoppeeList list = shoppeeDao.getShoppeeList(session);
         if (list == null || list.isEmpty()) {
             String speechText = "You don't have any lists.";
-            return getTellSpeechletResponse(speechText);
+            return getAskSpeechletResponse(speechText, speechText);
         }
         String storeName = intent.getSlot("StoreName").getValue();
         if (storeName == null) {
             String speechText = "Sorry, I did not hear the store name. Please say again?";
             return getAskSpeechletResponse(speechText, speechText);
         }
-
         List<String> items = list.getItemsForStore(storeName);
         if (items.size() == 0) {
             String speechText = "You don't have items in " + storeName + " list.";
-            return getTellSpeechletResponse(speechText);
+            return getAskSpeechletResponse(speechText, speechText);
         }
         String speechText = "List " + storeName + " contains: ";
         for (String item : items) {
             speechText += item + ", ";
         }
-        return getTellSpeechletResponse(speechText);
+        return getAskSpeechletResponse(speechText, speechText);
     }
 
-    public SpeechletResponse getClearItemsForStoreIntentResponse(Intent intent, Session session) {
-        ShoppeeList list = shoppeeDao.getShoppeeList(session);
-        if (list == null || list.isEmpty()) {
-            String speechText = "You don't have any lists.";
-            return getTellSpeechletResponse(speechText);
-        }
-        String storeName = intent.getSlot("StoreName").getValue();
-        if (storeName == null) {
-            String speechText = "Sorry, I did not hear the store name. Please say again?";
-            return getAskSpeechletResponse(speechText, speechText);
-        }
-        List<String> items = list.getItemsForStore(storeName);
-        if (items.size() == 0) {
-            String speechText = "You don't have items in " + storeName + " list.";
-            return getTellSpeechletResponse(speechText);
-        }
-        list.clearItemsForStore(storeName);
-        shoppeeDao.saveShoppeeList(list);
-        String speechText = "List " + storeName + " cleared.";
-        return getTellSpeechletResponse(speechText);
+    public SpeechletResponse getHelpIntentResponse() {
+        String speechText = "Here are some things you can say: " +
+                "Add milk to stop and shop, " +
+                "remove cheese from costco, " +
+                "read costco list. " +
+                "You can also say stop if you’re done. " +
+                "So, how can I help?";
+        return getAskSpeechletResponse(speechText, speechText);
     }
 
-    public SpeechletResponse getClearItemsForAllStoresIntentResponse(Session session) {
-        ShoppeeList list = shoppeeDao.getShoppeeList(session);
-        if (list == null || list.isEmpty()) {
-            String speechText = "You don't have any lists.";
-            return getTellSpeechletResponse(speechText);
-        }
-        list.clearItemsForAllStores();
-        shoppeeDao.saveShoppeeList(list);
-        String speechText = "All lists cleared.";
-        return getTellSpeechletResponse(speechText);
-    }
-
-    public SpeechletResponse getResetListsIntentResponse(Session session) {
-        ShoppeeList list = shoppeeDao.getShoppeeList(session);
-        if (list == null || list.isEmpty()) {
-            String speechText = "You don't have any lists.";
-            return getTellSpeechletResponse(speechText);
-        }
-        list.clearAll();
-        shoppeeDao.saveShoppeeList(list);
-        String speechText = "Reset all lists.";
+    public SpeechletResponse getExitIntentResponse() {
+        String speechText = "Bye.";
         return getTellSpeechletResponse(speechText);
     }
 
     private SpeechletResponse getAskSpeechletResponse(String speechText, String repromptText) {
         // Create the Simple card content.
         SimpleCard card = new SimpleCard();
-        card.setTitle("Session");
+        card.setTitle("Shoppee Session");
         card.setContent(speechText);
 
         // Create the plain text output.
@@ -239,7 +197,7 @@ public class ShoppeeSpeechlet implements Speechlet {
     private SpeechletResponse getTellSpeechletResponse(String speechText) {
         // Create the Simple card content.
         SimpleCard card = new SimpleCard();
-        card.setTitle("Session");
+        card.setTitle("Shoppee Session");
         card.setContent(speechText);
 
         // Create the plain text output.

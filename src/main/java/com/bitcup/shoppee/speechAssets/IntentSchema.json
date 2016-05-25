@@ -27,39 +27,11 @@
       ]
     },
     {
-      "intent": "ReadItemFromStoreIntent",
+      "intent": "ReadItemsFromStoreIntent",
       "slots": [
         {
           "name": "StoreName",
           "type": "LIST_OF_STORES"
-        }
-      ]
-    },
-    {
-      "intent": "ClearItemsForStoreIntent",
-      "slots": [
-        {
-          "name": "StoreName",
-          "type": "LIST_OF_STORES"
-        }
-      ]
-    },
-    {
-      "intent": "ClearItemsForAllStoresIntent"
-    },
-    {
-      "intent": "ResetListsIntent"
-    },
-    {
-      "intent": "StoreItemsToUserViaSMSIntent",
-      "slots": [
-        {
-          "name": "StoreName",
-          "type": "LIST_OF_STORES"
-        },
-        {
-          "name": "UserName",
-          "type": "LIST_OF_USERS"
         }
       ]
     },
