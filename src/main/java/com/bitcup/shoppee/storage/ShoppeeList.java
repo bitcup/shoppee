@@ -32,7 +32,7 @@ public class ShoppeeList {
     }
 
     public Set<String> getStores() {
-        return listData.getItemsByStore().keySet();
+        return listData.getItemsByStore().keySet().stream().map(ShoppeeStore::getName).collect(Collectors.toSet());
     }
 
     public boolean storeContains(String item, String store) {
@@ -40,8 +40,9 @@ public class ShoppeeList {
     }
 
     public List<String> getItemsForStore(String store) {
-        if (listData.getItemsByStore().containsKey(store)) {
-            return listData.getItemsByStore().get(store).stream().map(ShoppeeListItem::getName).collect(Collectors.toList());
+        ShoppeeStore ss = listData.getStoreByName(store);
+        if (ss != null) {
+            return listData.getItemsByStore().get(ss).stream().map(ShoppeeListItem::getName).collect(Collectors.toList());
         }
         return Lists.newArrayList();
     }

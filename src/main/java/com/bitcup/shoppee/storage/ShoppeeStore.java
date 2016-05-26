@@ -7,16 +7,15 @@ import java.util.UUID;
 /**
  * @author bitcup
  */
-public class ShoppeeListItem {
+public class ShoppeeStore {
     private String id;
     private String name;
-    private boolean purchased = false;
 
     // do not remove - used by jackson
-    public ShoppeeListItem() {
+    public ShoppeeStore() {
     }
 
-    public ShoppeeListItem(String name) {
+    public ShoppeeStore(String name) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
     }
@@ -37,20 +36,11 @@ public class ShoppeeListItem {
         this.name = name;
     }
 
-    public boolean isPurchased() {
-        return purchased;
-    }
-
-    public void setPurchased(boolean purchased) {
-        this.purchased = purchased;
-    }
-
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
                 .append("name", name)
-                .append("purchased", purchased)
                 .toString();
     }
 }
