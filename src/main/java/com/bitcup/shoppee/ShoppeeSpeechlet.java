@@ -26,6 +26,8 @@ public class ShoppeeSpeechlet implements Speechlet {
     private AmazonDynamoDBClient amazonDynamoDBClient;
     private ShoppeeDao shoppeeDao;
 
+    private static final String BRIEF_HELP_TEXT = "You can add an item to a store, remove an item from a store, or say help. What would you like?";
+
     @Override
     public void onSessionStarted(SessionStartedRequest sessionStartedRequest, Session session) throws SpeechletException {
         init();
@@ -33,8 +35,7 @@ public class ShoppeeSpeechlet implements Speechlet {
 
     @Override
     public SpeechletResponse onLaunch(LaunchRequest launchRequest, Session session) throws SpeechletException {
-        String speechText = "You can add an item to a store, remove item from store, or say help. What would you like?";
-        return getAskSpeechletResponse(speechText, speechText);
+        return getAskSpeechletResponse(BRIEF_HELP_TEXT, BRIEF_HELP_TEXT);
     }
 
     @Override
@@ -107,7 +108,7 @@ public class ShoppeeSpeechlet implements Speechlet {
         list.addItemToStore(itemName, storeName);
         shoppeeDao.saveShoppeeList(list);
         String speechText = itemName + " added to " + storeName + " list";
-        return getAskSpeechletResponse(speechText, speechText);
+        return getAskSpeechletResponse(speechText, BRIEF_HELP_TEXT);
     }
 
     private SpeechletResponse getRemoveItemFromStoreIntentResponse(Intent intent, Session session) {
@@ -134,7 +135,7 @@ public class ShoppeeSpeechlet implements Speechlet {
         shoppeeDao.saveShoppeeList(list);
 
         String speechText = itemName + " removed from " + storeName + " list.";
-        return getAskSpeechletResponse(speechText, speechText);
+        return getAskSpeechletResponse(speechText, BRIEF_HELP_TEXT);
     }
 
     private SpeechletResponse getReadItemsFromStoreIntentResponse(Intent intent, Session session) {
@@ -157,7 +158,7 @@ public class ShoppeeSpeechlet implements Speechlet {
         for (String item : items) {
             speechText += item + ", ";
         }
-        return getAskSpeechletResponse(speechText, speechText);
+        return getAskSpeechletResponse(speechText, BRIEF_HELP_TEXT);
     }
 
     public SpeechletResponse getHelpIntentResponse() {
@@ -167,11 +168,11 @@ public class ShoppeeSpeechlet implements Speechlet {
                 "read costco list. " +
                 "You can also say stop if you’re done. " +
                 "So, how can I help?";
-        return getAskSpeechletResponse(speechText, speechText);
+        return getAskSpeechletResponse(speechText, BRIEF_HELP_TEXT);
     }
 
     public SpeechletResponse getExitIntentResponse() {
-        String speechText = "Bye.";
+        String speechText = "Happy shopping!";
         return getTellSpeechletResponse(speechText);
     }
 
