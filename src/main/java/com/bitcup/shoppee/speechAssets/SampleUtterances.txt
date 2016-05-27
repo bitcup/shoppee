@@ -2,6 +2,10 @@ AddItemToStoreIntent add {ItemName} to {StoreName}
 AddItemToStoreIntent add {ItemName} to {StoreName} list
 AddItemToStoreIntent add {ItemName} to {StoreName} shopping list
 
+AddItemToStoreIntent put {ItemName} in {StoreName}
+AddItemToStoreIntent put {ItemName} in {StoreName} list
+AddItemToStoreIntent put {ItemName} in {StoreName} shopping list
+
 RemoveItemFromStoreIntent remove {ItemName} from {StoreName}
 RemoveItemFromStoreIntent remove {ItemName} from {StoreName} list
 RemoveItemFromStoreIntent remove {ItemName} from {StoreName} shopping list
