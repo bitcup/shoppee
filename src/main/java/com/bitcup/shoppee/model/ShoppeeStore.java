@@ -1,4 +1,4 @@
-package com.bitcup.shoppee.storage;
+package com.bitcup.shoppee.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

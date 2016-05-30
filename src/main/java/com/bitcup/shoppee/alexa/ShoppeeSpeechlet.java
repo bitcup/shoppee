@@ -1,36 +1,27 @@
-package com.bitcup.shoppee;
+package com.bitcup.shoppee.alexa;
 
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.speechlet.*;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.bitcup.shoppee.storage.ShoppeeDynamoDbClient;
-import com.bitcup.shoppee.storage.ShoppeeDao;
-import com.bitcup.shoppee.storage.ShoppeeList;
-import com.bitcup.shoppee.storage.ShoppeeListData;
+import com.bitcup.shoppee.alexa.dto.ShoppeeList;
+import com.bitcup.shoppee.alexa.dao.ShoppeeDao;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * @author bitcup
  */
 public class ShoppeeSpeechlet implements Speechlet {
 
-    private AmazonDynamoDBClient amazonDynamoDBClient;
-    private ShoppeeDao shoppeeDao;
+    private final ShoppeeDao shoppeeDao = new ShoppeeDao();
 
     private static final String BRIEF_HELP_TEXT = "You can add an item to a store, remove an item from a store, or say help. What would you like?";
 
     @Override
     public void onSessionStarted(SessionStartedRequest sessionStartedRequest, Session session) throws SpeechletException {
-        init();
+        // nothing to do
     }
 
     @Override
@@ -40,14 +31,14 @@ public class ShoppeeSpeechlet implements Speechlet {
 
     @Override
     public SpeechletResponse onIntent(IntentRequest request, Session session) throws SpeechletException {
-        init();
+        String userId = session.getUser().getUserId();
         Intent intent = request.getIntent();
         if ("AddItemToStoreIntent".equals(intent.getName())) {
-            return getAddItemToStoreIntentResponse(intent, session);
+            return getAddItemToStoreIntentResponse(intent, userId);
         } else if ("RemoveItemFromStoreIntent".equals(intent.getName())) {
-            return getRemoveItemFromStoreIntentResponse(intent, session);
+            return getRemoveItemFromStoreIntentResponse(intent, userId);
         } else if ("ReadItemsFromStoreIntent".equals(intent.getName())) {
-            return getReadItemsFromStoreIntentResponse(intent, session);
+            return getReadItemsFromStoreIntentResponse(intent, userId);
         } else if ("AMAZON.HelpIntent".equals(intent.getName())) {
             return getHelpIntentResponse();
         } else if ("AMAZON.CancelIntent".equals(intent.getName())) {
@@ -64,26 +55,7 @@ public class ShoppeeSpeechlet implements Speechlet {
         // nothing to do
     }
 
-    private void init() throws SpeechletException {
-        if (amazonDynamoDBClient == null) {
-            try {
-                Properties prop = new Properties();
-                InputStream in = getClass().getResourceAsStream("/credz.properties");
-                prop.load(in);
-                String accessKey = prop.getProperty("accessKey");
-                String secretKey = prop.getProperty("secretKey");
-                in.close();
-                AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-                amazonDynamoDBClient = new AmazonDynamoDBClient(credentials);
-                ShoppeeDynamoDbClient client = new ShoppeeDynamoDbClient(amazonDynamoDBClient);
-                shoppeeDao = new ShoppeeDao(client);
-            } catch (IOException e) {
-                throw new SpeechletException(e);
-            }
-        }
-    }
-
-    private SpeechletResponse getAddItemToStoreIntentResponse(Intent intent, Session session) {
+    private SpeechletResponse getAddItemToStoreIntentResponse(Intent intent, String userId) {
         String storeName = intent.getSlot("StoreName").getValue();
         if (storeName == null) {
             String speechText = "Sorry, I did not hear the store name. Please say again?";
@@ -95,9 +67,9 @@ public class ShoppeeSpeechlet implements Speechlet {
             return getAskSpeechletResponse(speechText, speechText);
         }
 
-        ShoppeeList list = shoppeeDao.getShoppeeList(session);
+        ShoppeeList list = shoppeeDao.getShoppeeList(userId);
         if (list == null) {
-            list = new ShoppeeList(session, new ShoppeeListData());
+            list = new ShoppeeList(userId);
         }
         // todo: what if item exists, but is already marked as purchased?
         // todo: prompt for "add another item?"
@@ -111,8 +83,8 @@ public class ShoppeeSpeechlet implements Speechlet {
         return getAskSpeechletResponse(speechText, BRIEF_HELP_TEXT);
     }
 
-    private SpeechletResponse getRemoveItemFromStoreIntentResponse(Intent intent, Session session) {
-        ShoppeeList list = shoppeeDao.getShoppeeList(session);
+    private SpeechletResponse getRemoveItemFromStoreIntentResponse(Intent intent, String userId) {
+        ShoppeeList list = shoppeeDao.getShoppeeList(userId);
         if (list == null || list.isEmpty()) {
             String speechText = "You don't have any lists.";
             return getAskSpeechletResponse(speechText, speechText);
@@ -138,8 +110,8 @@ public class ShoppeeSpeechlet implements Speechlet {
         return getAskSpeechletResponse(speechText, BRIEF_HELP_TEXT);
     }
 
-    private SpeechletResponse getReadItemsFromStoreIntentResponse(Intent intent, Session session) {
-        ShoppeeList list = shoppeeDao.getShoppeeList(session);
+    private SpeechletResponse getReadItemsFromStoreIntentResponse(Intent intent, String userId) {
+        ShoppeeList list = shoppeeDao.getShoppeeList(userId);
         if (list == null || list.isEmpty()) {
             String speechText = "You don't have any lists.";
             return getAskSpeechletResponse(speechText, speechText);

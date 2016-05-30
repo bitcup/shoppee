@@ -1,37 +1,36 @@
-package com.bitcup.shoppee.storage;
+package com.bitcup.shoppee.alexa.dao;
 
-import com.amazon.speech.speechlet.Session;
+import com.bitcup.shoppee.alexa.dto.ShoppeeList;
+import com.bitcup.shoppee.storage.ShoppeeDynamoDbClient;
+import com.bitcup.shoppee.storage.ShoppeeUserDataItem;
 
 /**
  * @author bitcup
  */
 public class ShoppeeDao {
-    private final ShoppeeDynamoDbClient dynamoDbClient;
 
-    public ShoppeeDao(ShoppeeDynamoDbClient dynamoDbClient) {
-        this.dynamoDbClient = dynamoDbClient;
-    }
+    private final ShoppeeDynamoDbClient dynamoDbClient = new ShoppeeDynamoDbClient();
 
-    public ShoppeeList getShoppeeList(Session session) {
+    public ShoppeeList getShoppeeList(String userId) {
         ShoppeeUserDataItem item = new ShoppeeUserDataItem();
-        item.setCustomerId(session.getUser().getUserId());
+        item.setUserId(userId);
         item = dynamoDbClient.loadItem(item);
         if (item == null) {
             return null;
         }
-        return new ShoppeeList(session, item.getListData());
+        return new ShoppeeList(userId, item.getListData());
     }
 
     public void saveShoppeeList(ShoppeeList list) {
         ShoppeeUserDataItem item = new ShoppeeUserDataItem();
-        item.setCustomerId(list.getSession().getUser().getUserId());
+        item.setUserId(list.getUserId());
         item.setListData(list.getListData());
         dynamoDbClient.saveItem(item);
     }
 
     public void deleteShoppeeList(ShoppeeList list) {
         ShoppeeUserDataItem item = new ShoppeeUserDataItem();
-        item.setCustomerId(list.getSession().getUser().getUserId());
+        item.setUserId(list.getUserId());
         item.setListData(list.getListData());
         dynamoDbClient.deleteItem(item);
     }

@@ -1,4 +1,4 @@
-package com.bitcup.shoppee.storage;
+package com.bitcup.shoppee.model;
 
 import org.junit.Test;
 import org.slf4j.Logger;

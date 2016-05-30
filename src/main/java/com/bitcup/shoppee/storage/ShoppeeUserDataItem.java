@@ -4,6 +4,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.bitcup.shoppee.model.ShoppeeListData;
+import com.bitcup.shoppee.model.ShoppeeListDataMarshaller;
 
 /**
  * DynamoDB model
@@ -13,16 +15,16 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 @DynamoDBTable(tableName = "ShoppeeUserData")
 public class ShoppeeUserDataItem {
 
-    private String customerId;
+    private String userId;
     private ShoppeeListData listData;
 
     @DynamoDBHashKey(attributeName = "CustomerId")
-    public String getCustomerId() {
-        return customerId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @DynamoDBAttribute(attributeName = "Data")

@@ -1,6 +1,8 @@
-package com.bitcup.shoppee.storage;
+package com.bitcup.shoppee.alexa.dto;
 
-import com.amazon.speech.speechlet.Session;
+import com.bitcup.shoppee.model.ShoppeeListData;
+import com.bitcup.shoppee.model.ShoppeeListItem;
+import com.bitcup.shoppee.model.ShoppeeStore;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -8,19 +10,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * DTO used by speechlet class
+ *
  * @author bitcup
  */
 public class ShoppeeList {
-    private final Session session;
+    private final String userId;
     private final ShoppeeListData listData;
 
-    public ShoppeeList(Session session, ShoppeeListData listData) {
-        this.session = session;
+    public ShoppeeList(String userId) {
+        this.userId = userId;
+        this.listData = new ShoppeeListData();
+    }
+
+    public ShoppeeList(String userId, ShoppeeListData listData) {
+        this.userId = userId;
         this.listData = listData;
     }
 
-    public Session getSession() {
-        return session;
+    public String getUserId() {
+        return userId;
     }
 
     public ShoppeeListData getListData() {
@@ -31,8 +40,8 @@ public class ShoppeeList {
         return listData.getItemsByStore().isEmpty();
     }
 
-    public Set<String> getStores() {
-        return listData.getItemsByStore().keySet().stream().map(ShoppeeStore::getName).collect(Collectors.toSet());
+    public Set<ShoppeeStore> getStores() {
+        return listData.getItemsByStore().keySet();
     }
 
     public boolean storeContains(String item, String store) {

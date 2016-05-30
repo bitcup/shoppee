@@ -7,11 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
  * @author bitcup
  */
 public class ShoppeeDynamoDbClient {
-    private final AmazonDynamoDBClient dynamoDBClient;
-
-    public ShoppeeDynamoDbClient(final AmazonDynamoDBClient dynamoDBClient) {
-        this.dynamoDBClient = dynamoDBClient;
-    }
+    private final AmazonDynamoDBClient dynamoDBClient = AmazonDynamoDbClientHolder.getInstance();
 
     // Loads an item from DynamoDB by primary Hash Key. Callers of this method should pass in an
     // object which represents an item in the DynamoDB table item with the primary key populated

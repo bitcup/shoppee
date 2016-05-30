@@ -1,4 +1,4 @@
-package com.bitcup.shoppee.storage;
+package com.bitcup.shoppee.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.fasterxml.jackson.core.JsonGenerator;

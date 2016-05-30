@@ -1,4 +1,4 @@
-package com.bitcup.shoppee.storage;
+package com.bitcup.shoppee.model;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.builder.ToStringBuilder;

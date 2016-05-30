@@ -1,4 +1,4 @@
-package com.bitcup.shoppee;
+package com.bitcup.shoppee.alexa;
 
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
 import com.bitcup.shoppee.utils.Props;
